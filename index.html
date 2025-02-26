@@ -2,50 +2,81 @@
 <html>
 <head>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 50%;
+        }
+        .chart {
+            width: 400px;
+            height: 120px;
+            padding: 10px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+    </style>
     <script type="text/javascript">
         google.charts.load('current', { 'packages': ['corechart', 'gauge'] });
-        google.charts.setOnLoadCallback(drawNumberChart);
+        google.charts.setOnLoadCallback(drawAllCharts);
 
-        let numberChart;
-        let data;
+        let charts = [];
+        let data = [];
 
-        function drawNumberChart() {
-            // Initialisation de la donnée
-            data = new google.visualization.DataTable();
-            data.addColumn('string', 'Label');
-            data.addColumn('number', 'Value');
-            data.addRows([
-                ['Current Value', 0] // Valeur initiale
-            ]);
+        function drawAllCharts() {
+            // Création de 3 graphiques "Number"
+            for (let i = 0; i < 3; i++) {
+                data[i] = new google.visualization.DataTable();
+                data[i].addColumn('string', 'Label');
+                data[i].addColumn('number', 'Value');
+                data[i].addRows([
+                    ['Current Value', 0] // Valeur initiale
+                ]);
 
-            // Créer le graphique
-            numberChart = new google.visualization.Gauge(document.getElementById('number_chart_div'));
-            numberChart.draw(data, {
-                width: 400,
-                height: 120,
-                min: 0,
-                max: 100, // Ajustez en fonction de votre besoin
-                redFrom: 90,
-                redTo: 100,
-                yellowFrom: 75,
-                yellowTo: 90,
-                minorTicks: 5
-            });
+                charts[i] = new google.visualization.Gauge(document.getElementById('chart_div_' + i));
+                charts[i].draw(data[i], {
+                    width: 400,
+                    height: 120,
+                    min: 0,
+                    max: 100, // Ajustez en fonction de votre besoin
+                    redFrom: 90,
+                    redTo: 100,
+                    yellowFrom: 75,
+                    yellowTo: 90,
+                    minorTicks: 5
+                });
+            }
 
-            // Mettre à jour la valeur toutes les 15 secondes
-            setInterval(updateNumberChart, 15000);
+            // Mettre à jour les graphiques toutes les 15 secondes
+            setInterval(updateAllCharts, 15000);
         }
 
-        function updateNumberChart() {
-            // Récupérer les données en temps réel depuis ThingSpeak
+        function updateAllCharts() {
             fetch('https://api.thingspeak.com/channels/2855822/fields/1.json?api_key=R8ZZ2Y30OKSRL72V&results=1')
                 .then(response => response.json())
                 .then(dataResponse => {
                     if (dataResponse.feeds.length > 0) {
-                        const value = dataResponse.feeds[dataResponse.feeds.length - 1].field1; // Changez 'field1' si nécessaire
-                        // Mettre à jour la valeur du graphique
-                        data.setValue(0, 1, parseFloat(value)); // Assurez-vous que la valeur est un nombre
-                        numberChart.draw(data); // Redessiner le graphique avec la nouvelle valeur
+                        for (let i = 0; i < 3; i++) {
+                            const value = dataResponse.feeds[dataResponse.feeds.length - 1].field1; // Changez 'field1' si nécessaire
+                            data[i].setValue(0, 1, parseFloat(value)); // Mettre à jour la valeur pour chaque graphique
+                            charts[i].draw(data[i]); // Redessiner chaque graphique
+                        }
                     }
                 })
                 .catch(error => console.error('Erreur de récupération des données :', error));
@@ -53,6 +84,11 @@
     </script>
 </head>
 <body>
-    <div id="number_chart_div" style="width: 400px; height: 120px;"></div>
+    <div class="container">
+        <h1>Valeurs en Temps Réel</h1>
+        <div id="chart_div_0" class="chart"></div>
+        <div id="chart_div_1" class="chart"></div>
+        <div id="chart_div_2" class="chart"></div>
+    </div>
 </body>
 </html>
