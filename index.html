@@ -68,27 +68,39 @@
         }
 
         function updateAllCharts() {
+            // Fetch pour chaque champ individuellement
             fetch('https://api.thingspeak.com/channels/2855822/fields/1.json?api_key=R8ZZ2Y30OKSRL72V&results=1')
                 .then(response => response.json())
                 .then(dataResponse => {
                     if (dataResponse.feeds.length > 0) {
-                        // Récupérer les valeurs des trois champs et les affecter aux graphiques respectifs
                         const value1 = dataResponse.feeds[dataResponse.feeds.length - 1].field1;
-                        const value2 = dataResponse.feeds[dataResponse.feeds.length - 1].field2;
-                        const value3 = dataResponse.feeds[dataResponse.feeds.length - 1].field3;
-
-                        // Mettre à jour la valeur de chaque graphique
                         data[0].setValue(0, 1, parseFloat(value1));
-                        data[1].setValue(0, 1, parseFloat(value2));
-                        data[2].setValue(0, 1, parseFloat(value3));
-
-                        // Redessiner chaque graphique avec les nouvelles valeurs
-                        for (let i = 0; i < 3; i++) {
-                            charts[i].draw(data[i]);
-                        }
+                        charts[0].draw(data[0]);
                     }
                 })
-                .catch(error => console.error('Erreur de récupération des données :', error));
+                .catch(error => console.error('Erreur de récupération des données pour field1 :', error));
+
+            fetch('https://api.thingspeak.com/channels/2855822/fields/2.json?api_key=R8ZZ2Y30OKSRL72V&results=1')
+                .then(response => response.json())
+                .then(dataResponse => {
+                    if (dataResponse.feeds.length > 0) {
+                        const value2 = dataResponse.feeds[dataResponse.feeds.length - 1].field2;
+                        data[1].setValue(0, 1, parseFloat(value2));
+                        charts[1].draw(data[1]);
+                    }
+                })
+                .catch(error => console.error('Erreur de récupération des données pour field2 :', error));
+
+            fetch('https://api.thingspeak.com/channels/2855822/fields/3.json?api_key=R8ZZ2Y30OKSRL72V&results=1')
+                .then(response => response.json())
+                .then(dataResponse => {
+                    if (dataResponse.feeds.length > 0) {
+                        const value3 = dataResponse.feeds[dataResponse.feeds.length - 1].field3;
+                        data[2].setValue(0, 1, parseFloat(value3));
+                        charts[2].draw(data[2]);
+                    }
+                })
+                .catch(error => console.error('Erreur de récupération des données pour field3 :', error));
         }
     </script>
 </head>
