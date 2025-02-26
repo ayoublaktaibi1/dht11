@@ -72,10 +72,19 @@
                 .then(response => response.json())
                 .then(dataResponse => {
                     if (dataResponse.feeds.length > 0) {
+                        // Récupérer les valeurs des trois champs et les affecter aux graphiques respectifs
+                        const value1 = dataResponse.feeds[dataResponse.feeds.length - 1].field1;
+                        const value2 = dataResponse.feeds[dataResponse.feeds.length - 1].field2;
+                        const value3 = dataResponse.feeds[dataResponse.feeds.length - 1].field3;
+
+                        // Mettre à jour la valeur de chaque graphique
+                        data[0].setValue(0, 1, parseFloat(value1));
+                        data[1].setValue(0, 1, parseFloat(value2));
+                        data[2].setValue(0, 1, parseFloat(value3));
+
+                        // Redessiner chaque graphique avec les nouvelles valeurs
                         for (let i = 0; i < 3; i++) {
-                            const value = dataResponse.feeds[dataResponse.feeds.length - 1].field1; // Changez 'field1' si nécessaire
-                            data[i].setValue(0, 1, parseFloat(value)); // Mettre à jour la valeur pour chaque graphique
-                            charts[i].draw(data[i]); // Redessiner chaque graphique
+                            charts[i].draw(data[i]);
                         }
                     }
                 })
