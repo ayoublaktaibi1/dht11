@@ -16,7 +16,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 30px;
+            gap: 20px; /* Réduit l'espace entre les éléments */
             width: 100%;
             max-width: 1000px;
             padding: 20px;
@@ -50,6 +50,11 @@
             text-align: center;
             margin-bottom: 40px;
         }
+
+        /* Réduire l'espace entre les graphiques et les descriptions */
+        .chart-wrapper .description {
+            margin-left: 10px; /* Réduit l'espace entre le graphique et la description */
+        }
         
         /* Responsive Design */
         @media screen and (max-width: 768px) {
@@ -65,6 +70,7 @@
                 width: 100%;
                 text-align: center;
                 padding-left: 0;
+                margin-left: 0;
             }
             h1 {
                 font-size: 24px;
@@ -145,29 +151,26 @@
 </head>
 <body>
     <div class="container">
-        <h1>Valeurs en Temps Réel</h1>
+        <h1>Real-time Values</h1>
         
         <div class="chart-wrapper">
             <div id="chart_div_0" class="chart"></div>
             <div class="description">
-                <h2>Température</h2>
-                <p>Mesure de la température en temps réel, ajustée pour une plage de 0 à 100°C.</p>
+                <h2>Temperature</h2>
             </div>
         </div>
 
         <div class="chart-wrapper">
             <div id="chart_div_1" class="chart"></div>
             <div class="description">
-                <h2>Humidité</h2>
-                <p>Indicateur de l'humidité actuelle, avec des seuils pour des niveaux d'humidité normaux et élevés.</p>
+                <h2>Humidity</h2>
             </div>
         </div>
 
         <div class="chart-wrapper">
             <div id="chart_div_2" class="chart"></div>
             <div class="description">
-                <h2>Sol Moisture</h2>
-                <p>Suivi de l'humidité du sol en temps réel, essentiel pour les applications agricoles.</p>
+                <h2>Soil Moisture</h2>
             </div>
         </div>
 
