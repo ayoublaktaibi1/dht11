@@ -3,24 +3,28 @@
 <head>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
-        google.charts.load('current', { 'packages': ['gauge'] });
-        google.charts.setOnLoadCallback(drawGauge);
+        google.charts.load('current', { 'packages': ['corechart', 'gauge'] });
+        google.charts.setOnLoadCallback(drawNumberChart);
 
-        let gauge;
+        let numberChart;
         let data;
 
-        function drawGauge() {
-            // Initialiser les données pour la jauge
-            data = google.visualization.arrayToDataTable([
-                ['Label', 'Value'],
-                ['Vitesse', 0] // Valeur initiale de la jauge
+        function drawNumberChart() {
+            // Initialisation de la donnée
+            data = new google.visualization.DataTable();
+            data.addColumn('string', 'Label');
+            data.addColumn('number', 'Value');
+            data.addRows([
+                ['Current Value', 0] // Valeur initiale
             ]);
 
-            // Créer la jauge
-            gauge = new google.visualization.Gauge(document.getElementById('gauge_div'));
-            gauge.draw(data, {
+            // Créer le graphique
+            numberChart = new google.visualization.Gauge(document.getElementById('number_chart_div'));
+            numberChart.draw(data, {
                 width: 400,
                 height: 120,
+                min: 0,
+                max: 100, // Ajustez en fonction de votre besoin
                 redFrom: 90,
                 redTo: 100,
                 yellowFrom: 75,
@@ -28,20 +32,20 @@
                 minorTicks: 5
             });
 
-            // Mettre à jour la jauge toutes les 15 secondes
-            setInterval(updateGauge, 15000);
+            // Mettre à jour la valeur toutes les 15 secondes
+            setInterval(updateNumberChart, 15000);
         }
 
-        function updateGauge() {
+        function updateNumberChart() {
             // Récupérer les données en temps réel depuis ThingSpeak
             fetch('https://api.thingspeak.com/channels/2855822/fields/1.json?api_key=R8ZZ2Y30OKSRL72V&results=1')
                 .then(response => response.json())
                 .then(dataResponse => {
                     if (dataResponse.feeds.length > 0) {
                         const value = dataResponse.feeds[dataResponse.feeds.length - 1].field1; // Changez 'field1' si nécessaire
-                        // Mettre à jour la jauge avec la nouvelle valeur
-                        gauge.setValue(0, 1, parseFloat(value)); // Assurez-vous que la valeur est un nombre
-                        gauge.draw(data); // Redessiner la jauge
+                        // Mettre à jour la valeur du graphique
+                        data.setValue(0, 1, parseFloat(value)); // Assurez-vous que la valeur est un nombre
+                        numberChart.draw(data); // Redessiner le graphique avec la nouvelle valeur
                     }
                 })
                 .catch(error => console.error('Erreur de récupération des données :', error));
@@ -49,6 +53,6 @@
     </script>
 </head>
 <body>
-    <div id="gauge_div" style="width: 400px; height: 120px;"></div>
+    <div id="number_chart_div" style="width: 400px; height: 120px;"></div>
 </body>
 </html>
