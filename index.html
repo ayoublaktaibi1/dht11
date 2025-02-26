@@ -34,16 +34,7 @@
             box-sizing: border-box;
         }
         .chart {
-            width: 60%;
             height: 120px;
-        }
-        .description {
-            width: 35%;
-            text-align: left;
-            font-size: 18px;
-            font-weight: 600;
-            color: #555;
-            padding-left: 20px;
         }
         h1 {
             color: #333;
@@ -91,7 +82,7 @@
                 data[i].addColumn('string', 'Label');
                 data[i].addColumn('number', 'Value');
                 data[i].addRows([
-                    ['Current Value', 0] // Valeur initiale
+                    ['', 0] // Valeur initiale
                 ]);
 
                 charts[i] = new google.visualization.Gauge(document.getElementById('chart_div_' + i));
