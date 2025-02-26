@@ -3,54 +3,52 @@
 <head>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
-        google.charts.load('current', { packages: ['corechart', 'bar'] });
-        google.charts.setOnLoadCallback(drawBarChart);
+        google.charts.load('current', { 'packages': ['gauge'] });
+        google.charts.setOnLoadCallback(drawGauge);
 
-        let barChart;
-        let barData;
-        let barOptions;
+        let gauge;
+        let data;
 
-        function drawBarChart() {
-            barData = new google.visualization.DataTable();
-            barData.addColumn('string', 'Label');
-            barData.addColumn('number', 'Vitesse');
-            barData.addRow(['Vitesse', 0]);
+        function drawGauge() {
+            // Initialiser les données pour la jauge
+            data = google.visualization.arrayToDataTable([
+                ['Label', 'Value'],
+                ['Vitesse', 0] // Valeur initiale de la jauge
+            ]);
 
-            barOptions = {
-                chart: {
-                    title: 'Vitesse en temps réel',
-                    subtitle: 'Mesure de la vitesse actuelle',
-                },
-                hAxis: { title: 'Vitesse' },
-                vAxis: { title: 'Vitesse' },
-                bars: 'horizontal',
-                width: 600,
-                height: 300
-            };
+            // Créer la jauge
+            gauge = new google.visualization.Gauge(document.getElementById('gauge_div'));
+            gauge.draw(data, {
+                width: 400,
+                height: 120,
+                redFrom: 90,
+                redTo: 100,
+                yellowFrom: 75,
+                yellowTo: 90,
+                minorTicks: 5
+            });
 
-            barChart = new google.visualization.BarChart(document.getElementById('bar_chart_div'));
-            barChart.draw(barData, barOptions);
-
-            // Mettre à jour le graphique toutes les 15 secondes
-            setInterval(updateBarChart, 15000);
+            // Mettre à jour la jauge toutes les 15 secondes
+            setInterval(updateGauge, 15000);
         }
 
-        function updateBarChart() {
+        function updateGauge() {
+            // Récupérer les données en temps réel depuis ThingSpeak
             fetch('https://api.thingspeak.com/channels/2855822/fields/1.json?api_key=R8ZZ2Y30OKSRL72V&results=1')
                 .then(response => response.json())
-                .then(responseData => {
-                    if (responseData.feeds && responseData.feeds.length > 0) {
-                        const value = responseData.feeds[responseData.feeds.length - 1].field1;
-                        barData.setValue(0, 1, parseFloat(value));
-
-                        barChart.draw(barData, barOptions);
+                .then(dataResponse => {
+                    if (dataResponse.feeds.length > 0) {
+                        const value = dataResponse.feeds[dataResponse.feeds.length - 1].field1; // Changez 'field1' si nécessaire
+                        // Mettre à jour la jauge avec la nouvelle valeur
+                        gauge.setValue(0, 1, parseFloat(value)); // Assurez-vous que la valeur est un nombre
+                        gauge.draw(data); // Redessiner la jauge
                     }
                 })
-                .catch(error => console.error('Error fetching data:', error));
+                .catch(error => console.error('Erreur de récupération des données :', error));
         }
     </script>
 </head>
 <body>
-    <div id="bar_chart_div" style="width: 600px; height: 300px;"></div>
+    <div id="gauge_div" style="width: 400px; height: 120px;"></div>
 </body>
 </html>
